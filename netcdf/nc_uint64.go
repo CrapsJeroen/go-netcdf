@@ -59,7 +59,7 @@ func (a Attr) ReadUint64s(val []uint64) (err error) {
 func (v Var) ReadUint64At(idx []uint64) (val uint64, err error) {
 	var dimPtr *C.size_t
 	if len(idx) > 0 {
-		dimPtr = (*C.size_t)(unsafe.Pointer(&idx[0]))
+		dimPtr = cSizes(idx)
 	}
 	err = newError(C.nc_get_var1_ulonglong(C.int(v.ds), C.int(v.id),
 		dimPtr, (*C.ulonglong)(unsafe.Pointer(&val))))
@@ -70,7 +70,7 @@ func (v Var) ReadUint64At(idx []uint64) (val uint64, err error) {
 func (v Var) WriteUint64At(idx []uint64, val uint64) (err error) {
 	var dimPtr *C.size_t
 	if len(idx) > 0 {
-		dimPtr = (*C.size_t)(unsafe.Pointer(&idx[0]))
+		dimPtr = cSizes(idx)
 	}
 	err = newError(C.nc_put_var1_ulonglong(C.int(v.ds), C.int(v.id),
 		dimPtr, (*C.ulonglong)(unsafe.Pointer(&val))))
@@ -84,8 +84,8 @@ func (v Var) WriteUint64Slice(data []uint64, start, count []uint64) error {
 		return err
 	}
 	return newError(C.nc_put_vara_ulonglong(C.int(v.ds), C.int(v.id),
-		(*C.size_t)(unsafe.Pointer(&start[0])),
-		(*C.size_t)(unsafe.Pointer(&count[0])),
+		cSizes(start),
+		cSizes(count),
 		(*C.ulonglong)(unsafe.Pointer(&data[0])),
 	))
 }
@@ -98,8 +98,8 @@ func (v Var) ReadUint64Slice(data []uint64, start, count []uint64) error {
 		return err
 	}
 	return newError(C.nc_get_vara_ulonglong(C.int(v.ds), C.int(v.id),
-		(*C.size_t)(unsafe.Pointer(&start[0])),
-		(*C.size_t)(unsafe.Pointer(&count[0])),
+		cSizes(start),
+		cSizes(count),
 		(*C.ulonglong)(unsafe.Pointer(&data[0])),
 	))
 }
@@ -111,9 +111,9 @@ func (v Var) WriteUint64StridedSlice(data []uint64, start, count []uint64, strid
 		return err
 	}
 	return newError(C.nc_put_vars_ulonglong(C.int(v.ds), C.int(v.id),
-		(*C.size_t)(unsafe.Pointer(&start[0])),
-		(*C.size_t)(unsafe.Pointer(&count[0])),
-		(*C.ptrdiff_t)(unsafe.Pointer(&stride[0])),
+		cSizes(start),
+		cSizes(count),
+		cPtrdiffs(stride),
 		(*C.ulonglong)(unsafe.Pointer(&data[0])),
 	))
 }
@@ -126,9 +126,9 @@ func (v Var) ReadUint64StridedSlice(data []uint64, start, count []uint64, stride
 		return err
 	}
 	return newError(C.nc_get_vars_ulonglong(C.int(v.ds), C.int(v.id),
-		(*C.size_t)(unsafe.Pointer(&start[0])),
-		(*C.size_t)(unsafe.Pointer(&count[0])),
-		(*C.ptrdiff_t)(unsafe.Pointer(&stride[0])),
+		cSizes(start),
+		cSizes(count),
+		cPtrdiffs(stride),
 		(*C.ulonglong)(unsafe.Pointer(&data[0])),
 	))
 }
