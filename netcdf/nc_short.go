@@ -59,7 +59,7 @@ func (a Attr) ReadInt16s(val []int16) (err error) {
 func (v Var) ReadInt16At(idx []uint64) (val int16, err error) {
 	var dimPtr *C.size_t
 	if len(idx) > 0 {
-		dimPtr = (*C.size_t)(unsafe.Pointer(&idx[0]))
+		dimPtr = cSizes(idx)
 	}
 	err = newError(C.nc_get_var1_short(C.int(v.ds), C.int(v.id),
 		dimPtr, (*C.short)(unsafe.Pointer(&val))))
@@ -70,7 +70,7 @@ func (v Var) ReadInt16At(idx []uint64) (val int16, err error) {
 func (v Var) WriteInt16At(idx []uint64, val int16) (err error) {
 	var dimPtr *C.size_t
 	if len(idx) > 0 {
-		dimPtr = (*C.size_t)(unsafe.Pointer(&idx[0]))
+		dimPtr = cSizes(idx)
 	}
 	err = newError(C.nc_put_var1_short(C.int(v.ds), C.int(v.id),
 		dimPtr, (*C.short)(unsafe.Pointer(&val))))
@@ -84,8 +84,8 @@ func (v Var) WriteInt16Slice(data []int16, start, count []uint64) error {
 		return err
 	}
 	return newError(C.nc_put_vara_short(C.int(v.ds), C.int(v.id),
-		(*C.size_t)(unsafe.Pointer(&start[0])),
-		(*C.size_t)(unsafe.Pointer(&count[0])),
+		cSizes(start),
+		cSizes(count),
 		(*C.short)(unsafe.Pointer(&data[0])),
 	))
 }
@@ -98,8 +98,8 @@ func (v Var) ReadInt16Slice(data []int16, start, count []uint64) error {
 		return err
 	}
 	return newError(C.nc_get_vara_short(C.int(v.ds), C.int(v.id),
-		(*C.size_t)(unsafe.Pointer(&start[0])),
-		(*C.size_t)(unsafe.Pointer(&count[0])),
+		cSizes(start),
+		cSizes(count),
 		(*C.short)(unsafe.Pointer(&data[0])),
 	))
 }
@@ -111,9 +111,9 @@ func (v Var) WriteInt16StridedSlice(data []int16, start, count []uint64, stride 
 		return err
 	}
 	return newError(C.nc_put_vars_short(C.int(v.ds), C.int(v.id),
-		(*C.size_t)(unsafe.Pointer(&start[0])),
-		(*C.size_t)(unsafe.Pointer(&count[0])),
-		(*C.ptrdiff_t)(unsafe.Pointer(&stride[0])),
+		cSizes(start),
+		cSizes(count),
+		cPtrdiffs(stride),
 		(*C.short)(unsafe.Pointer(&data[0])),
 	))
 }
@@ -126,9 +126,9 @@ func (v Var) ReadInt16StridedSlice(data []int16, start, count []uint64, stride [
 		return err
 	}
 	return newError(C.nc_get_vars_short(C.int(v.ds), C.int(v.id),
-		(*C.size_t)(unsafe.Pointer(&start[0])),
-		(*C.size_t)(unsafe.Pointer(&count[0])),
-		(*C.ptrdiff_t)(unsafe.Pointer(&stride[0])),
+		cSizes(start),
+		cSizes(count),
+		cPtrdiffs(stride),
 		(*C.short)(unsafe.Pointer(&data[0])),
 	))
 }
